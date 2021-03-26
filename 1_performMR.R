@@ -41,6 +41,30 @@ option_list <- list(
 opt_parser <- OptionParser(option_list = option_list,add_help_option = F)
 opt <- parse_args(opt_parser)
 
+# set up output dir
+if ("results" %in% list.files()){
+  print("results dir exists")
+} else {
+  print("creating results directory")
+  dir.create("results")
+}
+
+output.dir <- tolower(paste0("results/exp.", gsub(" ", "", opt$e), ".out.", gsub(" ", "", opt$d)))
+
+if (output.dir %in% list.files()){
+  message("writing to output directory ", 
+          output.dir)
+} else {
+  message("creating and writing to output directory: ", 
+          output.dir)
+  dir.create(output.dir)
+}
+
+# set up log file
+con <- file(paste0(output.dir,"/out.log"))
+sink(con, append=FALSE)
+sink(con, append=FALSE, type="message")
+
 # Message for user:
 message("....")
 message("Instrument method: ", opt$i)
@@ -167,19 +191,21 @@ het <- mr_heterogeneity(dat) # Get heterogeneity statistics - maybe unnecessary?
 pleiotropy <- mr_pleiotropy_test(dat) # erforms MR Egger and returns intercept values.
 res_single <- mr_singlesnp(dat) # Perform mr_wald_ration on each SNP individually. Compare to all mr_ivw and mr_egger_regression 
 
-# write files for each 
+
 message("Writing files for MR results and sensitivity tests")
-write.csv(x = mr_results, file = "mrresults.csv")
-write.csv(x = het, file="heterogeneity.csv")
-write.csv(x = pleiotropy, file="pleiotropy.csv")
-write.csv(x = res_single, file="singlesnpMR.csv")
+write.csv(x = mr_results, file = paste0(output.dir, "/mrresults.csv"))
+write.csv(x = het, file=paste0(output.dir, "/heterogeneity.csv"))
+write.csv(x = pleiotropy, file=paste0(output.dir, "/pleiotropy.csv"))
+write.csv(x = res_single, file=paste0(output.dir, "/singlesnpMR.csv"))
 message("...")
+
+
 
 #### Visualize causal effect of exposure on outcome ####
 message("Performing visualisations...")
 library(ggplot2)
 # Generate a scatter plot comparing the different methods
-png(paste0("./scatterplot.png")) 
+png(paste0(output.dir, "/scatterplot.png")) 
 mr_scatter_plot(mr_results, dat)[[1]] + 
   theme_classic() + 
   theme(axis.line.y = element_blank(), 
@@ -188,7 +214,7 @@ mr_scatter_plot(mr_results, dat)[[1]] +
 dev.off()
 
 # Generate a funnel plot to check asymmetry
-png("./funnelplot.png")
+png(paste0(output.dir, "/funnelplot.png"))
 mr_funnel_plot(res_single)[[1]] +
 theme_classic() + 
   theme( legend.position = "top")
@@ -196,12 +222,19 @@ dev.off()
 
 # Run a leave-one-out analysis and generate a plot to test whether any one SNP is driving any pleiotropy or asymmetry in the estimates
 res_loo <- mr_leaveoneout(dat)
-png("./loo.png")
+png(paste0(output.dir, "/loo.png"))
 mr_leaveoneout_plot(res_loo)[[1]] +
   theme_classic() + 
   theme( legend.position = "top")
 dev.off()
 
+
 message("Analysis complete...")
+
+# Restore output to console
+sink() 
+sink(type="message")
+
 ## holes - not necessarily issues but won't printing errors
 # beta conversion - message for "sumstats or toploci not being used - beta entry being ignored"
+
