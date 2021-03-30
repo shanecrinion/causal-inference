@@ -27,8 +27,8 @@ That says, on line 1 only, substitute BP with pos, A1 with effect_allele, etc. N
 - <code>-f</code>/<code>--file</code>: File location for sumstats of outcome. Applicable if -o is sumstats. 
 - <code>-r</code>/<code>--r2</code>: Cutoff for R2 to detect linkage disequilibrium and clump SNPs. Default value is 0.1 but R2 < 0.01, 0.001 have also been used in the literature.
 - <code>-e</code>/<code>--exp</code>\*: Name of the exposure.
-- <code>-o</code>/<code>--out</code>\*: Name of the outcome.
-- <code>-b/--beta</code>\: Required for sumstats and toploci only. Enter 'exposure', 'outcome' or 'both'.
+- <code>-d</code>/<code>--disorder</code>\*: Name of the outcome.
+- <code>-b</code>/<code>--beta</code>\: Required for sumstats and toploci only. Enter 'exposure', 'outcome' or 'both'.
 
 \*: compulsory flags.
 
