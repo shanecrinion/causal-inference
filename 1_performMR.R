@@ -49,7 +49,7 @@ if ("results" %in% list.files()){
   dir.create("results")
 }
 
-output.dir <- tolower(paste0("results/exp.", gsub(" ", "", opt$e), ".out.", gsub(" ", "", opt$d)))
+output.dir <- tolower(paste0("results/exp.", gsub(" ", "", opt$e), opt$i,  ".out.", gsub(" ", "", opt$d), opt$o))
 
 if (output.dir %in% list.files()){
   message("writing to output directory ", 
