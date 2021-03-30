@@ -22,13 +22,13 @@ That says, on line 1 only, substitute BP with pos, A1 with effect_allele, etc. N
 <!-- USAGE EXAMPLES -->
 ## Flags:
 - <code>-i</code>/<code>--instruments</code>\*:  The approach being used for MR analysis. Depending on your desired approach, enter toploci, sumstats or mrbase.  
-- <code>-s</code>/<code>--snps</code>: The file location for exposure data.
-- <code>-o</code>/<code>--outcome</code>: Method for outcome data - enter sumstats or mrbase.
+- <code>-s</code>/<code>--snps</code>: The file location for exposure data. Applicable if </code>-i</code> is toploci or sumstats.
+- <code>-o</code>/<code>--outcome</code>\*: Method for outcome data - enter sumstats or mrbase.
 - <code>-f</code>/<code>--file</code>: File location for sumstats of outcome. Applicable if -o is sumstats. 
 - <code>-r</code>/<code>--r2</code>: Cutoff for R2 to detect linkage disequilibrium and clump SNPs. Default value is 0.1 but R2 < 0.01, 0.001 have also been used in the literature.
 - <code>-e</code>/<code>--exp</code>\*: Name of the exposure.
 - <code>-o</code>/<code>--out</code>\*: Name of the outcome.
-- <code>-b/--beta</code>\*: Required for sumstats and toploci only. Enter 'exposure', 'outcome' or 'both'.
+- <code>-b/--beta</code>\: Required for sumstats and toploci only. Enter 'exposure', 'outcome' or 'both'.
 
 \*: compulsory flags.
 
@@ -38,7 +38,11 @@ To perform MR using locally stored top independent loci for exposure and MRBase 
 
 <code>./1_performMR.R  -i toploci -s ukb-chronotype-toploci.csv -o mrbase -e "schizophrenia" -d "chronotype" </code> 
 
-<b>Note:</b> The trait naming conventions can cause issues. They are also case sensitive so for example "Depressive sympotoms" will work but "depressive symptoms" will not. You can search your trait of interest at https://gwas.mrcieu.ac.uk/datasets/ to identify the naming convention used.
+<b>Note:</b> The trait naming conventions can cause issues when using mrbase. Case sensitivity is applicable so for example "Depressive symptoms" will work but "depressive symptoms" will not. You can search your trait of interest at https://gwas.mrcieu.ac.uk/datasets/ to identify the naming convention used.
+
+Use the search feature in IEU OpenGWAS at the link above to identify the naming convention for your trait, eg. schizophrenia:
+
+![Search](./img/GWAS_search.png)
 
 ## Output:
 Results are output into a <code>results</code> directory, in a subdirectory with the naming convention <code>exp.(exposure).out.(outcome)</code>. The files outputted to this directory are:
