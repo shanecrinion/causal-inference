@@ -1,1 +1,0 @@
-1_performMR.R -i "toploci" -s ~/Desktop/files/data/chronotype/Sup1-UKBChronotype23andMeMorningGWAS.formatted.csv -o mrbase -e Chronotype -d "bipolar disorder"
