@@ -16,6 +16,7 @@
 suppressPackageStartupMessages({
   library(optparse) # import via flags
   library(TwoSampleMR) # perform MR
+  library(stringr)
   })
 
 # flag list
@@ -49,7 +50,7 @@ if ("results" %in% list.files()){
   dir.create("results")
 }
 
-output.dir <- tolower(paste0("results/exp.", gsub(" ", "", opt$e), opt$i,  ".out.", gsub(" ", "", opt$d), opt$o))
+output.dir <- tolower(paste0("results/exp.", str_replace_all(opt$e, "[^[:alnum:]]", ""), ".", opt$i,  ".out.", str_replace_all(opt$d, "[^[:alnum:]]", ""), ".", opt$o))
 
 if (output.dir %in% list.files()){
   message("writing to output directory ", 
@@ -64,6 +65,13 @@ if (output.dir %in% list.files()){
 con <- file(paste0(output.dir,"/out.log"))
 sink(con, append=FALSE)
 sink(con, append=FALSE, type="message")
+
+# set up function to search multiple formats of entry for exposure and outcome
+firstup <- function(x) {
+  substr(x, 1, 1) <- toupper(substr(x, 1, 1))
+  x
+}
+
 
 # Message for user:
 message("....")
@@ -91,6 +99,7 @@ if (opt$o  == "mrbase" | opt$i == "mrbase"){
   if (opt$i ==  "toploci") { # Method 1. Read file containing top independent loci reported by GWAS
     message("Reading top loci file:")
     exposure_data <- read.csv(opt$s, header = T) 
+    head(exposure_data)
     exposure_data <- format_data(exposure_data, type = "exposure")
     } else if (opt$i == "sumstats") { # Method 2. Extract top SNPs from sumstats
     message("Reading and extracting instrumental SNP P < 5e-8 from exposure summary data...")
@@ -98,11 +107,12 @@ if (opt$o  == "mrbase" | opt$i == "mrbase"){
     data <- data[data$pval < 5e-8,]
     message("Formatting SNPS...")
     exposure_data <- format_data(data)
+    exposure_data$exposure <- opt$e
     message("Clumping instrumental SNPs..can take a while...")
     exposure_data <- clump_data(exposure_data, clump_r2 = opt$r)
     } else if (opt$i == "mrbase") { # Method 3. Extract SNPs from MRBase
     message("Importing data using MRBase")
-    data <- ao[ao$trait == opt$e,]
+    data <- ao[ao$trait == opt$e | ao$trait== firstup(opt$e),]
     data <- data[data$population=="European",]
     id <- data$id
     exposure_data <- extract_instruments(outcomes = id, r2 = opt$r, force_server = T)
@@ -125,10 +135,10 @@ if (opt$o ==  "sumstats") { # Method 1. Read sumstats file
     filename = opt$f, 
     sep = "\t")
   outcome_data$outcome <- opt$d
+  id.out <- outcome_data$id[is.na(outcome_data$id)==FALSE]
 } else if (opt$o == "mrbase"){ # Method 2. Read mrbase data
-  data <- ao[ao$trait == opt$d,]
+  data <- ao[ao$trait == opt$d | ao$trait == firstup(opt$d),]
   message("Preview of data available for disorder:")
-  print(data)
   data <- data[data$population=="European",]
   id.out <- data$id[is.na(data$id)==FALSE]
   outcome_data <- extract_outcome_data(exposure_data$SNP, id.out, proxies = T)
@@ -151,17 +161,22 @@ message("...")
 message("Converting OR -> Beta")
 # convert OR to beta if necessary
 if (is.null(opt$b)){
-  exposure_data$beta <- exposure_data$beta
+  exposure_data$beta.exposure <- exposure_data$beta.exposure
   message("OR -> beta conversion not required")
 } else if (opt$b == "both") {
-  exposure_data$beta <- log(exposure_data$beta)
+  exposure_data$beta.exposure <- log(exposure_data$beta.exposure)
   outcome_data$beta.outcome <- log(outcome_data$beta.outcome)
 } else if (opt$b == "exposure") {
-  exposure_data$beta <- log(exposure_data$beta)
+  exposure_data$beta.exposure <- log(exposure_data$beta.exposure)
 } else if (opt$b == "outcome") {
   outcome_data$beta.outcome <- log(outcome_data$beta.outcome)
 } 
 
+message("Print to identify the whether beta are correctly converted for exposure and outcome")
+message("Exp data: is beta correct?")
+head(exposure_data)
+message("Outcome data: is beta correct?")
+head(outcome_data)
 
 # harmonize data
 message("Harmonising data to flip the effect to co-ordinate between exposure and outcome...")

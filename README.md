@@ -11,13 +11,13 @@ The aim of this script is to allow fast, standardised analysis of numerous trait
 - <code>TwoSampleMR</code>
 
 ## Pre-processing:
-If using approaches 1 or 2, you need to match format column names correctly. The column names must include pos, effect_allele, other_allele, eaf, beta and pval.
+If using approaches 1 or 2, you need to match format column names correctly. The column names must include SNP, effect_allele, other_allele, eaf, beta and pval. Optionally you can include ncase, ncontrol and samplesize (fully list available in TwoSampleMR documentation). 
 
 Column names can be edited with sed:
 
-<code>sed -i -e '1s/BP/pos/' -e '1s/A1/effect_allele/' -e '1s/A2/other_allele/' -e '1s/FRQ_A_67390/eaf/' -e '1s/OR/beta/' -e '1s/SE/se/' -e '1s/\tP\t/\tpval\t/' PGC3-cp.tsv</code>
+	sed -i -e '1s/BP/pos/' -e '1s/A1/effect_allele/' -e '1s/A2/other_allele/' -e '1s/FRQ_A_67390/eaf/' -e '1s/OR/beta/' -e '1s/SE/se/' -e '1s/\tP\t/\tpval\t/' PGC3-cp.tsv
 
-That says, on line 1 only, substitute BP with pos, A1 with effect_allele, etc. Note that '\t' is included for the 'P' column to avoid replacing 'SNP' with 'SNPval'. 
+That says, on line 1 only, substitute BP with pos, A1 with effect_allele, etc. Note that '\t' is included for the 'P' column to avoid replacing 'SNP' with 'SNPval'. If you replaced OR with beta, remember that you need to use the <code>-b</code> flag to convert this accordingly. 
 
 <!-- USAGE EXAMPLES -->
 ## Flags:
