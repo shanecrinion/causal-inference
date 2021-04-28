@@ -34,39 +34,41 @@ That says, on line 1 only, substitute BP with pos, A1 with effect_allele, etc. N
 
 ## Usage:
 
-To perform MR using locally stored top independent loci for exposure and MRBase data for outcome: 
+To perform MR using locally stored chronotype loci for exposure and MRBase data for schizophrenia as outcome: 
 
-<code>./1_performMR.R  -i toploci -s ukb-chronotype-toploci.csv -o mrbase -e "schizophrenia" -d "chronotype" </code> 
+	./1_performMR.R  -i toploci -s ukb-chronotype-toploci.csv -o mrbase -e "chronotype" -d "schizophrenia"  
 
 <b>Note:</b> The trait naming conventions can cause issues when using mrbase. Case sensitivity is applicable so for example "Depressive symptoms" will work but "depressive symptoms" will not. You can search your trait of interest at https://gwas.mrcieu.ac.uk/datasets/ to identify the naming convention used.
 
-Use the search feature in IEU OpenGWAS at the link above to identify the naming convention for your trait, eg. schizophrenia:
+Use the search feature in IEU OpenGWAS at the link above to identify the naming convention for your trait, eg. chronotype:
 
 ![Search](./img/GWAS_search.png)
 
 ## Output:
 Results are output into a <code>results</code> directory, in a subdirectory with the naming convention <code>exp.(exposure).out.(outcome)</code>. The files outputted to this directory are:
+
 <b>Tables:</b>
-- <code>heterogeneity.csv</code>: Test for heterogeneity.  
+- <code>heterogeneity.csv</code>: Test for heterogeneity among causal estimates.  
 - <code>mrresults.csv</code>: Results for MR. MR results included are inverse-variance weighted (IVW), MR Egger regression and Penalised weighted median MR. These were selected to best encompass MR performed in previously reported MR studies. 
 - <code>pleiotropy.csv</code>: Performs MR Egger and returns intercept values.
 - <code>singlesnpMR.csv</code>: Performs 2 sample MR on each individual SNP
 
 <b>Plots:</b>
-- <code>scatterplot.png</code>:  
-- <code>funnelplot.png</code>: 
-- <code>heterogeneity.png</code>:
-- <code>loo.png</code>:
+- <code>scatterplot.png</code>:  Scatter plot of each MR analysis performed.
+- <code>funnelplot.png</code>: Identify asymmetry which indicates directional pleiotropy.
+- <code>loo.png</code>: To explore whether a single SNP drives causal associations.
 
 <b>Log:</b>
 - <code>out.log</code>: Log of stdout including flags selected and any command outputs. The radial MR results can also be found here as they print
 
 
 <!-- ROADMAP -->
-\\ ## Roadmap
+### Roadmap
 The TwoSampleMR has a machine learning function that I would like to explore and intergrate into this script.
 
-\\ ### Potential Features
+I would also like to integrate the package <code>MRlap</code> and eQTL data.
+
+### Potential Features
 
 ### Limitations 
 Currently set-up is applicable for European samples.
@@ -77,7 +79,8 @@ Summary stats must be in TSV format (the norm)
 ## Contact
 Shane Crinion
 shanecrinion@gmail.com
+s.crinion1@nuigalway.ie
 
 <!-- ACKNOWLEDGEMENTS -->
-## Acknowledgements
-TwoSampleMR
+## Reference
+Hemani G, Zheng J, Elsworth B, Wade KH, Baird D, Haberland V, Laurin C, Burgess S, Bowden J, Langdon R, Tan VY, Yarmolinsky J, Shihab HA, Timpson NJ, Evans DM, Relton C, Martin RM, Davey Smith G, Gaunt TR, Haycock PC, The MR-Base Collaboration. The MR-Base platform supports systematic causal inference across the human phenome. eLife 2018;7:e34408. doi: 10.7554/eLife.34408
